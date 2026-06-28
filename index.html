@@ -5,7 +5,43 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>0050正2 AI分析</title>
 
-<link rel="stylesheet" href="style.css">
+<style>
+body{
+    margin:0;
+    font-family:Arial;
+    background:#0f172a;
+    color:white;
+}
+
+.container{
+    max-width:480px;
+    margin:auto;
+    padding:16px;
+}
+
+.header{
+    text-align:center;
+    margin:20px 0;
+}
+
+.card{
+    background:#1e293b;
+    padding:16px;
+    margin-bottom:12px;
+    border-radius:12px;
+}
+
+.title{
+    font-size:13px;
+    color:#94a3b8;
+}
+
+.value{
+    font-size:22px;
+    margin-top:6px;
+}
+</style>
+
 </head>
 
 <body>
@@ -17,18 +53,18 @@
     </div>
 
     <div class="card">
-        <div class="title">價格</div>
-        <div class="value" id="price">-</div>
+        <div class="title">目前價格</div>
+        <div class="value" id="price">載入中...</div>
     </div>
 
     <div class="card">
         <div class="title">漲跌%</div>
-        <div class="value" id="change">-</div>
+        <div class="value" id="change">載入中...</div>
     </div>
 
     <div class="card">
         <div class="title">AI訊號</div>
-        <div class="value" id="signal">-</div>
+        <div class="value" id="signal">分析中...</div>
     </div>
 
     <div class="card">
@@ -36,21 +72,52 @@
         <div class="value" id="score">-</div>
     </div>
 
-    <div class="card">
-        <div class="title">盤中</div>
-        <div class="value" id="intraday">-</div>
-    </div>
-
-    <div class="card">
-        <div class="title">明日</div>
-        <div class="value" id="tomorrow">-</div>
-    </div>
-
 </div>
 
-<script src="api.js"></script>
-<script src="ai.js"></script>
-<script src="app.js"></script>
+<script>
+async function run(){
+
+    try{
+
+        const res = await fetch("https://query1.finance.yahoo.com/v7/finance/quote?symbols=^TWII");
+        const json = await res.json();
+        const d = json.quoteResponse.result[0];
+
+        let price = d.regularMarketPrice;
+        let change = d.regularMarketChangePercent;
+
+        let score = 50;
+
+        if(change > 1) score += 15;
+        if(change < 0) score -= 10;
+        if(price > 22000) score += 10;
+
+        score = Math.max(0, Math.min(100, score));
+
+        let signal = "";
+
+        if(score >= 70){
+            signal = "🟢 偏多（可留意）";
+        } else if(score >= 50){
+            signal = "🟡 震盪（觀望）";
+        } else {
+            signal = "🔴 偏空（保守）";
+        }
+
+        document.getElementById("price").innerText = price;
+        document.getElementById("change").innerText = change.toFixed(2) + "%";
+        document.getElementById("score").innerText = score;
+        document.getElementById("signal").innerText = signal;
+
+    } catch(e){
+
+        document.getElementById("signal").innerText = "資料載入失敗（API限制）";
+    }
+}
+
+run();
+setInterval(run, 10000);
+</script>
 
 </body>
 </html>
