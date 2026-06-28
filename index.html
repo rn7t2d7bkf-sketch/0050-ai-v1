@@ -3,48 +3,44 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>0050 AI 操盤助手</title>
+<title>0050 AI 操盤助手 V1</title>
 
 <style>
 body{
     margin:0;
+    font-family:Arial;
     background:#0f172a;
     color:white;
-    font-family:Arial;
 }
 
 .header{
-    background:#1e293b;
     padding:20px;
     text-align:center;
-    font-size:28px;
+    font-size:24px;
     font-weight:bold;
+    background:#1e293b;
 }
 
 .card{
-    margin:15px;
-    padding:15px;
+    margin:12px;
+    padding:14px;
     background:#1e293b;
     border-radius:12px;
 }
 
-.title{
+.label{
+    font-size:13px;
     color:#94a3b8;
-    font-size:14px;
 }
 
 .value{
-    font-size:24px;
-    margin-top:10px;
+    font-size:20px;
+    margin-top:6px;
 }
 
-.green{
-    color:#22c55e;
-}
-
-.orange{
-    color:#f59e0b;
-}
+.up{color:#22c55e;}
+.down{color:#ef4444;}
+.mid{color:#fbbf24;}
 </style>
 
 </head>
@@ -52,28 +48,94 @@ body{
 <body>
 
 <div class="header">
-0050 AI 操盤助手
+0050 AI 操盤助手 V1
 </div>
 
 <div class="card">
-<div class="title">目前狀態</div>
-<div class="value green">🟢 偏多</div>
+<div class="label">即時價格</div>
+<div class="value" id="price">載入中...</div>
 </div>
 
 <div class="card">
-<div class="title">AI 建議</div>
-<div class="value">
-今天可留意拉回後分批布局，
-不建議追高。
-</div>
+<div class="label">AI盤中判斷</div>
+<div class="value mid" id="intraday">計算中...</div>
 </div>
 
 <div class="card">
-<div class="title">AI 信心分數</div>
-<div class="value orange">
-75 / 100
+<div class="label">AI明日方向</div>
+<div class="value mid" id="tomorrow">計算中...</div>
 </div>
+
+<div class="card">
+<div class="label">AI信心分數</div>
+<div class="value" id="score">--</div>
 </div>
+
+<script>
+
+// ===== 模擬即時資料（下一版會換成真實）=====
+function getPrice(){
+    return 121.35 + (Math.random()*2 - 1);
+}
+
+// ===== 技術分析簡化模型 =====
+function analyze(price){
+
+    let score = 50;
+
+    // 模擬市場動能
+    if(price > 121){
+        score += 15;
+    } else {
+        score -= 10;
+    }
+
+    // 隨機市場情緒（未來會改成新聞+法人）
+    let noise = Math.random()*20 - 10;
+    score += noise;
+
+    score = Math.max(0, Math.min(100, score));
+
+    let intraday = "";
+    let tomorrow = "";
+
+    if(score > 65){
+        intraday = "偏多 → 可分批布局";
+        tomorrow = "明日續強機率偏高";
+    } else if(score < 40){
+        intraday = "偏空 → 觀望或減碼";
+        tomorrow = "明日仍有回檔風險";
+    } else {
+        intraday = "震盪 → 觀望";
+        tomorrow = "方向不明確";
+    }
+
+    return {score, intraday, tomorrow};
+}
+
+// ===== 更新畫面 =====
+function update(){
+
+    let price = getPrice();
+    let result = analyze(price);
+
+    document.getElementById("price").innerText =
+        price.toFixed(2);
+
+    document.getElementById("intraday").innerText =
+        result.intraday;
+
+    document.getElementById("tomorrow").innerText =
+        result.tomorrow;
+
+    document.getElementById("score").innerText =
+        result.score.toFixed(0) + " / 100";
+}
+
+update();
+setInterval(update, 5000); // 每5秒更新
+
+</script>
 
 </body>
 </html>
