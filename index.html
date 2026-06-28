@@ -137,6 +137,56 @@ update();
 setInterval(update, 5000); // 每5秒更新
 
 </script>
-<script src="app.js"></script>
+<script src="api.js"></script>
+<script src="ai.js"></script>
+<script>
+async function runApp(){
+
+    const data = await getMarketData();
+    const result = analyzeMarket(data);
+
+    document.body.innerHTML = `
+        <div class="container">
+
+            <div class="header">
+                <h1>0050正2 AI操盤助手</h1>
+            </div>
+
+            <div class="card">
+                <div class="title">目前價格</div>
+                <div class="value">${data.price}</div>
+            </div>
+
+            <div class="card">
+                <div class="title">今日漲跌</div>
+                <div class="value">${data.changePercent}%</div>
+            </div>
+
+            <div class="card">
+                <div class="title">AI訊號</div>
+                <div class="value">${result.signal}</div>
+            </div>
+
+            <div class="card">
+                <div class="title">AI分數</div>
+                <div class="value">${result.score} / 100</div>
+            </div>
+
+            <div class="card">
+                <div class="title">盤中判斷</div>
+                <div class="value">${result.intraday}</div>
+            </div>
+
+            <div class="card">
+                <div class="title">明日方向</div>
+                <div class="value">${result.tomorrow}</div>
+            </div>
+
+        </div>
+    `;
+}
+
+runApp();
+</script>
 </body>
 </html>
