@@ -3,7 +3,7 @@ async function update(){
     const data = await getMarketData();
     const result = analyzeMarket(data);
 
-    document.getElementById("price").innerText = data.price.toFixed(2);
+    document.getElementById("price").innerText = data.price;
     document.getElementById("change").innerText = data.changePercent.toFixed(2) + "%";
 
     document.getElementById("signal").innerText = result.signal;
