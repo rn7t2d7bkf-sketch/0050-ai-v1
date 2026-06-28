@@ -1,34 +1,17 @@
-// ===== 0050 AI 操盤助手 V1 =====
+async function updateDashboard(){
 
-// 目前先使用示範資料
-// 下一版會改成真正的即時資料
+    const data = await getMarketData();
+    const result = analyzeMarket(data);
 
-const market = {
-    price: 36.82,
-    change: 0.82,
-    score: 74,
-    intraday: "🟢 偏多",
-    tomorrow: "🟡 偏多但勿追高",
-    reason: [
-        "台積電偏強",
-        "大盤站上5日均線",
-        "成交量正常",
-        "MACD維持多方"
-    ]
-};
+    document.getElementById("price").innerText = data.price;
+    document.getElementById("change").innerText = data.changePercent + "%";
 
-function getSuggestion(score){
+    document.getElementById("signal").innerText = result.signal;
+    document.getElementById("score").innerText = result.score + " / 100";
 
-    if(score >= 70){
-        return "🟢 可以分批布局";
-    }
-
-    if(score >= 50){
-        return "🟡 建議觀望";
-    }
-
-    return "🔴 建議減碼";
+    document.getElementById("intraday").innerText = result.intraday;
+    document.getElementById("tomorrow").innerText = result.tomorrow;
 }
 
-console.log("0050 AI 已啟動");
-console.log(getSuggestion(market.score));
+updateDashboard();
+setInterval(updateDashboard, 10000);
