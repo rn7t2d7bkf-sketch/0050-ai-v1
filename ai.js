@@ -13,17 +13,7 @@ function analyzeMarket(data){
 
     if(data.volume > 40000) score += 5;
 
-    let newsScore = 0;
-    data.news.forEach(n=>{
-        if(n.includes("強") || n.includes("買") || n.includes("增加")){
-            newsScore += 1;
-        }
-    });
-
-    score += newsScore * 3;
-
-    if(score > 100) score = 100;
-    if(score < 0) score = 0;
+    score = Math.max(0, Math.min(100, score));
 
     let signal, intraday, tomorrow;
 
