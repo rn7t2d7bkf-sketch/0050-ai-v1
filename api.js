@@ -1,31 +1,36 @@
 async function getMarketData() {
 
-    // 台灣加權指數（免費公開來源）
-    const res = await fetch("https://query1.finance.yahoo.com/v7/finance/quote?symbols=^TWII");
-    const json = await res.json();
+    // 用穩定 CORS proxy（避免 Yahoo 被擋）
+    const url = "https://r.jina.ai/https://query1.finance.yahoo.com/v7/finance/quote?symbols=^TWII";
+
+    const res = await fetch(url);
+    const text = await res.text();
+
+    // 從文字中抓 JSON
+    const jsonStart = text.indexOf("{");
+    const json = JSON.parse(text.slice(jsonStart));
 
     const data = json.quoteResponse.result[0];
 
     return {
         price: data.regularMarketPrice,
         changePercent: data.regularMarketChangePercent,
-        index: data.regularMarketPrice,
-
-        // 0050正2先用連動估算（下一版會換成真標的）
-        change: data.regularMarketChangePercent,
-
         volume: data.regularMarketVolume || 50000,
 
-        tsmc: 1100, // 下一步會接真實台積電
+        index: data.regularMarketPrice,
 
-        nasdaq: 20000, // 下一步會接美股
+        // 🔥 0050正2「先用市場連動」
+        change: data.regularMarketChangePercent,
 
+        // 暫時保留（下一步會全部替換成真資料）
+        tsmc: 1100,
+        nasdaq: 20000,
         nightFuture: data.regularMarketPrice,
 
         news: [
-            "市場同步大盤走勢",
-            "科技股影響權重上升",
-            "資金流入權值股"
+            "市場跟隨台股大盤",
+            "權值股主導行情",
+            "資金流向大型股"
         ]
     };
 }
